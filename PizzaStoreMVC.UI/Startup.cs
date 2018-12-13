@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PizzaStoreData.DataAccess;
 
 namespace PizzaStoreMVC.UI
 {
@@ -31,6 +33,8 @@ namespace PizzaStoreMVC.UI
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddDbContext<PizzaStoreContext>(optionsBuilder =>
+                optionsBuilder.UseSqlServer(Configuration.GetConnectionString("MVCPizzaStore")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
