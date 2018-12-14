@@ -33,7 +33,7 @@ namespace PizzaStoreMVC.UI
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<PizzaStoreContext>(optionsBuilder =>
+            services.AddDbContext<PizzaStoreDBContext>(optionsBuilder =>
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("MVCPizzaStore")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
