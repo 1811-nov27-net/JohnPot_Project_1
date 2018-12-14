@@ -14,6 +14,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public IngredientRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(Ingredient entity)
@@ -42,11 +43,11 @@ namespace PizzaStoreData.DataAccess.Repositories
             foreach (var inventoryJunction in inventoryList)
                 inventoryRepo.Delete(inventoryJunction);
             // Now do the same for the PizzaJunction table
-            // TODO: Use PizzaJunctionRepo for cascading removal
             List<PizzaJunction> pizzaList = Database.PizzaJunction
                 .Where(pizza => pizza.IngredientId == entity.Id).ToList();
+            PizzaJunctionRepository pizzaRepo = new PizzaJunctionRepository(Database);
             foreach (var pizzaJunction in pizzaList)
-                Database.PizzaJunction.Remove(pizzaJunction);
+                pizzaRepo.Delete(pizzaJunction);
 
             Database.Remove(GetById(entity.Id));
         }
@@ -57,7 +58,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             if (Id.Length != 1)
                 throw new InvalidIdException($"Ingredient: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
-            Ingredient ingredient = Database.Ingredient.Find(Id);
+            Ingredient ingredient = Database.Ingredient.Find(Id[0]);
 
             return ingredient ?? throw new InvalidIdException($"IngredientId {Id[0]} was not found in the Ingredient table.");
         }
@@ -68,6 +69,11 @@ namespace PizzaStoreData.DataAccess.Repositories
                 throw new ArgumentNullException(nameof(entity));
 
             Database.Entry(GetById(entity.Id)).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

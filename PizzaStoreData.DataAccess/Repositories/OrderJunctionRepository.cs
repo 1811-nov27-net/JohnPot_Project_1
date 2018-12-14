@@ -1,6 +1,7 @@
 ﻿using PizzaStoreData.DataAccess.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
 
@@ -12,6 +13,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public OrderJunctionRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(OrderJunction entity)
@@ -19,13 +21,15 @@ namespace PizzaStoreData.DataAccess.Repositories
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            // Ensure the Order / Pizza exist
-            //  before trying to create the junction
+            // Ensure the Order exists before trying to create the junction
             // (GetById will throw if not)
             OrderRepository orderRepo = new OrderRepository(Database);
             orderRepo.GetById(entity.OrderId);
-            PizzaJunctionRepository pizzaRepo = new PizzaJunctionRepository(Database);
-            pizzaRepo.GetById(entity.PizzaId);
+            // Make sure the PizzaJunction also exists
+            List<PizzaJunction> pizzaList = Database.PizzaJunction
+                .Where(p => p.PizzaId == entity.PizzaId).ToList();
+            if (pizzaList.Count == 0)
+                throw new InvalidIdException("OrderJunctions: Could not create due to invalid PizzaId.");
 
             // Location / Ingredients are valid. Can successfully create
             //  the inventory junction
@@ -49,9 +53,9 @@ namespace PizzaStoreData.DataAccess.Repositories
             // OrderJunction PK is composed of 2 Ids:
             //  OrderId and PizzaId
             if (Id.Length != 2)
-                throw new InvalidIdException($"OrderJunction: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new InvalidIdException($"OrderJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
 
-            OrderJunction orderJunction = Database.OrderJunction.Find(Id);
+            OrderJunction orderJunction = Database.OrderJunction.Find(Id[0], Id[1]);
 
             return orderJunction ?? throw new InvalidIdException($"OrderJunction: OrderId {Id[0]} + PizzaId {Id[1]} was not found in the OrderJunction table.");
         }
@@ -66,6 +70,11 @@ namespace PizzaStoreData.DataAccess.Repositories
             entity = GetById(entity.OrderId, entity.PizzaId);
 
             Database.Entry(entity).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

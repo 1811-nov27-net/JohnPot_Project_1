@@ -12,6 +12,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public InventoryJunctionRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(InventoryJunction entity)
@@ -49,9 +50,9 @@ namespace PizzaStoreData.DataAccess.Repositories
             // InventoryJunction PK is composed of 2 Ids:
             //  LocationId and IngredientId
             if (Id.Length != 2)
-                throw new InvalidIdException($"InventoryJunction: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new InvalidIdException($"InventoryJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
             
-            InventoryJunction inventoryJunction = Database.InventoryJunction.Find(Id);
+            InventoryJunction inventoryJunction = Database.InventoryJunction.Find(Id[0], Id[1]);
 
             return inventoryJunction ?? throw new InvalidIdException($"LocationId {Id[0]} + IngredientId {Id[1]} was not found in the InventoryJunction table.");
         }
@@ -66,6 +67,11 @@ namespace PizzaStoreData.DataAccess.Repositories
             entity = GetById(entity.LocationId, entity.IngredientId);
 
             Database.Entry(entity).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

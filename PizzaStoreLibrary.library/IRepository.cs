@@ -10,5 +10,6 @@ namespace PizzaStoreLibrary.library
         void Create(T entity);
         void Update(T entity);
         void Delete(T entity);
+        void SaveChanges();
     }
 }

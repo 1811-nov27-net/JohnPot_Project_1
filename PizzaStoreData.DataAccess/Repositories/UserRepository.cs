@@ -14,6 +14,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public UserRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(User entity)
@@ -61,7 +62,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             if (Id.Length != 1)
                 throw new InvalidIdException($"User: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
-            User user = Database.User.Find(Id);
+            User user = Database.User.Find(Id[0]);
 
             return user ?? throw new InvalidIdException($"UserId {Id[0]} was not found in the User table.");
         }
@@ -72,6 +73,11 @@ namespace PizzaStoreData.DataAccess.Repositories
                 throw new ArgumentNullException(nameof(entity));
 
             Database.Entry(GetById(entity.Id)).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

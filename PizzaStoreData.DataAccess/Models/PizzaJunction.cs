@@ -8,13 +8,11 @@ namespace PizzaStoreData.DataAccess.Models
 {
     public class PizzaJunction
     {
-        public PizzaJunction()
-        {
-            OrderJunction = new HashSet<OrderJunction>();
-        }
+        private static int newId = 0;
+        public static int GetNewId(){ return ++newId; }
 
         [Key, Column(Order = 0)]
-        public int Id { get; set; }
+        public int PizzaId { get; set; }
         [Key, Column(Order = 1)]
         public int IngredientId { get; set; }
         // Amount of ingredient based on IngredientId
@@ -22,6 +20,7 @@ namespace PizzaStoreData.DataAccess.Models
         public int Count { get; set; }
 
         // Navigation Property
+        public Ingredient Ingredient { get; set; }
         public ICollection<OrderJunction> OrderJunction { get; set; }
     }
 }

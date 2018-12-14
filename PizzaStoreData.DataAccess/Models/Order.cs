@@ -9,6 +9,9 @@ namespace PizzaStoreData.DataAccess.Models
         public Order()
         {
             OrderJunction = new HashSet<OrderJunction>();
+            Location = new Location();
+            User = new User();
+
         }
 
         public int      Id         { get; set; }
@@ -17,7 +20,9 @@ namespace PizzaStoreData.DataAccess.Models
         public DateTime TimePlaced { get; set; }
         public decimal  TotalPrice { get; set; }
 
-        // Navigation Property
-        public ICollection<OrderJunction> OrderJunction { get; set; }
+        // Navigation Properties
+        public virtual Location Location { get; set; }
+        public virtual User         User { get; set; }
+        public virtual ICollection<OrderJunction> OrderJunction { get; set; }
     }
 }

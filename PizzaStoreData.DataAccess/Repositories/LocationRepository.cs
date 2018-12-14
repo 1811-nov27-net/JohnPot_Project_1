@@ -14,6 +14,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public LocationRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(Location entity)
@@ -54,9 +55,9 @@ namespace PizzaStoreData.DataAccess.Repositories
             //  that refer to this location
             List<InventoryJunction> inventoryList = Database.InventoryJunction
                 .Where(inv => inv.LocationId == entity.Id).ToList();
-            // TODO: Use InventoryJunctionRepo for removal
+            InventoryJunctionRepository inventoryRepo = new InventoryJunctionRepository(Database);
             foreach (var inventoryJunction in inventoryList)
-                Database.InventoryJunction.Remove(inventoryJunction);
+                inventoryRepo.Delete(inventoryJunction);
 
             // We can now safely remove the location
             Database.Remove(entity);
@@ -68,7 +69,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             if (Id.Length != 1)
                 throw new InvalidIdException($"Location: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
-            Location location = Database.Location.Find(Id);
+            Location location = Database.Location.Find(Id[0]);
 
             return location ?? throw new InvalidIdException($"LocationId {Id[0]} was not found in the Location table.");
         }
@@ -79,6 +80,11 @@ namespace PizzaStoreData.DataAccess.Repositories
                 throw new ArgumentNullException(nameof(entity));
 
             Database.Entry(GetById(entity.Id)).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

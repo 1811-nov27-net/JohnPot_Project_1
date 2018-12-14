@@ -9,6 +9,7 @@ namespace PizzaStoreData.DataAccess.Models
         public User()
         {
             Order = new HashSet<Order>();
+            DefaultLocation = new Location();
         }
 
         public int    Id                { get; set; }
@@ -17,6 +18,7 @@ namespace PizzaStoreData.DataAccess.Models
         public int?   DefaultLocationId { get; set; }
 
         // Navigation Property
-        public ICollection<Order> Order { get; set; }
+        public Location DefaultLocation { get; set; }
+        public ICollection<Order>    Order           { get; set; }
     }
 }

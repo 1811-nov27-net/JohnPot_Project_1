@@ -14,6 +14,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public OrderRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(Order entity)
@@ -43,11 +44,11 @@ namespace PizzaStoreData.DataAccess.Repositories
 
             // Need to remove all OrderJunctions that 
             //  refer to this table
-            // TODO: Use order junction repo to remove from table
             List<OrderJunction> orderJunctionList = Database.OrderJunction
                 .Where(o => o.OrderId == entity.Id).ToList();
+            OrderJunctionRepository orderJunctionRepo = new OrderJunctionRepository(Database);
             foreach (var orderJunction in orderJunctionList)
-                Database.OrderJunction.Remove(orderJunction);
+                orderJunctionRepo.Delete(orderJunction);
 
             Database.Remove(entity);
         }
@@ -58,7 +59,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             if (Id.Length != 1)
                 throw new InvalidIdException($"Order: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
-            Order order = Database.Order.Find(Id);
+            Order order = Database.Order.Find(Id[0]);
 
             return order ?? throw new InvalidIdException($"OrderId {Id[0]} was not found in the Order table.");
         }
@@ -69,6 +70,11 @@ namespace PizzaStoreData.DataAccess.Repositories
                 throw new ArgumentNullException(nameof(entity));
 
             Database.Entry(GetById(entity.Id)).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace PizzaStoreData.DataAccess.Repositories
         public PizzaJunctionRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            Database.Database.EnsureCreated();
         }
 
         public void Create(PizzaJunction entity)
@@ -39,14 +40,14 @@ namespace PizzaStoreData.DataAccess.Repositories
             // Need to remove any OrderJunction entities that
             //  reference this PizzaJunction
             List<OrderJunction> orderJunctions = Database.OrderJunction
-                .Where(o => o.PizzaId == entity.Id).ToList();
+                .Where(o => o.PizzaId == entity.PizzaId).ToList();
             OrderJunctionRepository orderJunctionRepo = new OrderJunctionRepository(Database);
             foreach (var orderJunction in orderJunctions)
                 orderJunctionRepo.Delete(orderJunction);
 
             // Ensure the PizzaJunction exists within the database
             //  GetById will throw an exception if not
-            entity = GetById(entity.Id, entity.IngredientId);
+            entity = GetById(entity.PizzaId, entity.IngredientId);
 
             Database.Remove(entity);
         }
@@ -56,9 +57,9 @@ namespace PizzaStoreData.DataAccess.Repositories
             // PizzaJunction PK is composed of 2 Ids:
             //  PizzaId and IngredientId
             if (Id.Length != 2)
-                throw new InvalidIdException($"PizzaJunction: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new InvalidIdException($"PizzaJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
 
-            PizzaJunction pizzaJunction = Database.PizzaJunction.Find(Id);
+            PizzaJunction pizzaJunction = Database.PizzaJunction.Find(Id[0], Id[1]);
 
             return pizzaJunction ?? throw new InvalidIdException($"Pizza: Id {Id[0]} + IngredientId {Id[1]} was not found in the PizzaJunction table.");
         }
@@ -70,9 +71,14 @@ namespace PizzaStoreData.DataAccess.Repositories
 
             // Ensure the PizzaJunction exists within the database
             //  GetById will throw an exception if not
-            entity = GetById(entity.Id, entity.IngredientId);
+            entity = GetById(entity.PizzaId, entity.IngredientId);
 
             Database.Entry(entity).CurrentValues.SetValues(entity);
+        }
+
+        public void SaveChanges()
+        {
+            Database.SaveChanges();
         }
     }
 }
