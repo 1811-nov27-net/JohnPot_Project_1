@@ -4,17 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
     public class LocationRepository : lib.IRepository<Location>
     {
-        private PizzaStoreDBContext Database { get; set; }
+        public PizzaStoreDBContext Database { get; set; }
+
+        public InventoryJunctionRepository inventoryRepo;
 
         public LocationRepository(PizzaStoreDBContext database)
         {
+            
             Database = database ?? throw new ArgumentNullException(nameof(database));
             Database.Database.EnsureCreated();
+
+            inventoryRepo = new InventoryJunctionRepository(Database);
         }
 
         public void Create(Location entity)
@@ -22,7 +28,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             Database.Add(entity ?? throw new ArgumentNullException(nameof(entity)));
         }
 
-        public void Delete(Location entity)
+        public void Delete(Location entity)     
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -67,11 +73,16 @@ namespace PizzaStoreData.DataAccess.Repositories
         {
             // Location only has one Id as PK
             if (Id.Length != 1)
-                throw new InvalidIdException($"Location: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"Location: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
             Location location = Database.Location.Find(Id[0]);
 
-            return location ?? throw new InvalidIdException($"LocationId {Id[0]} was not found in the Location table.");
+            return location ?? throw new e.InvalidIdException($"LocationId {Id[0]} was not found in the Location table.");
+        }
+
+        public List<Location> GetAllLocations()
+        {
+            return Database.Location.ToList();
         }
 
         public void Update(Location entity)

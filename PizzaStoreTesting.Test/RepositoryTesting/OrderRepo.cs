@@ -2,6 +2,7 @@
 using Xunit;
 using db = PizzaStoreData.DataAccess;
 using dbm = PizzaStoreData.DataAccess.Models;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -30,9 +31,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Order junction was removed              
-            Assert.Throws<db.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
             // Order was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
         }
         [Fact]
         public void OrderCreateSucceedsWithValidLocationIdAndUserId()
@@ -43,7 +44,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             dbm.Location dbLocation = new dbm.Location { Name = "a" };
             repo.locationRepo.Create(dbLocation);
             repo.SaveChanges();
-            dbm.User dbUser = new dbm.User { FirstName = "John", LastName = "Pot", DefaultLocationId = dbLocation.Id };
+            dbm.User dbUser = new dbm.User { Id = 2, FirstName = "John", LastName = "Pot", DefaultLocationId = dbLocation.Id };
             repo.userRepo.Create(dbUser);
             repo.SaveChanges();
             // Ensure the entities exist
@@ -52,6 +53,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             dbm.Order dbOrder = new dbm.Order
             {
+                Id = 2,
                 LocationId = dbLocation.Id,
                 UserId = dbUser.Id,
                 TimePlaced = DateTime.Now,
@@ -73,8 +75,8 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
         {
             // Arrange
             RepoTesting repo = new RepoTesting();
-            repo.ResetDatabase("Order_Test_2");
-            dbm.User dbUser = new dbm.User { FirstName = "John", LastName = "Pot"};
+            repo.ResetDatabase("Order_Test_3");
+            dbm.User dbUser = new dbm.User { Id = 2, FirstName = "John", LastName = "Pot"};
             repo.userRepo.Create(dbUser);
             repo.SaveChanges();
             int invalidLocationId = -1;
@@ -82,10 +84,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             // Ensure the user is valid
             Assert.NotNull(repo.userRepo.GetById(dbUser.Id));
             // Ensure the invalidLocationId is in fact invalid
-            Assert.Throws<db.InvalidIdException>(() => repo.locationRepo.GetById(invalidLocationId));
+            Assert.Throws<e.InvalidIdException>(() => repo.locationRepo.GetById(invalidLocationId));
 
             dbm.Order dbOrder = new dbm.Order
             {
+                Id = 2, 
                 LocationId = invalidLocationId,
                 UserId = dbUser.Id,
                 TimePlaced = DateTime.Now,
@@ -94,20 +97,20 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Act
 
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.Create(dbOrder));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.Create(dbOrder));
 
 
             // Assert
             // New order should not have been added to the database
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.GetById(dbOrder.Id));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.GetById(dbOrder.Id));
         }
         [Fact]
         public void OrderCreateFailsWithInvalidUserId()
         {
             // Arrange
             RepoTesting repo = new RepoTesting();
-            repo.ResetDatabase("Order_Test_2");
-            dbm.Location dbLocation = new dbm.Location { Name = "a" };
+            repo.ResetDatabase("Order_Test_4");
+            dbm.Location dbLocation = new dbm.Location { Id = 2, Name = "a" };
             repo.locationRepo.Create(dbLocation);
             repo.SaveChanges();
             int invalidUserId = -1;
@@ -115,10 +118,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             // Ensure the location is valid
             Assert.NotNull(repo.locationRepo.GetById(dbLocation.Id));
             // Ensure the user is invalid
-            Assert.Throws<db.InvalidIdException>(() => repo.userRepo.GetById(invalidUserId));
+            Assert.Throws<e.InvalidIdException>(() => repo.userRepo.GetById(invalidUserId));
 
             dbm.Order dbOrder = new dbm.Order
             {
+                Id = 2,
                 LocationId = dbLocation.Id,
                 UserId = invalidUserId,
                 TimePlaced = DateTime.Now,
@@ -127,12 +131,12 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Act
             // Create should throw an exception
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.Create(dbOrder));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.Create(dbOrder));
 
 
             // Assert
             // New order should not be searchable
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.GetById(dbOrder.Id));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.GetById(dbOrder.Id));
         }
 
     }

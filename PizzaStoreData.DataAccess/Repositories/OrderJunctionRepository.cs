@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
@@ -29,7 +30,7 @@ namespace PizzaStoreData.DataAccess.Repositories
             List<PizzaJunction> pizzaList = Database.PizzaJunction
                 .Where(p => p.PizzaId == entity.PizzaId).ToList();
             if (pizzaList.Count == 0)
-                throw new InvalidIdException("OrderJunctions: Could not create due to invalid PizzaId.");
+                throw new e.InvalidIdException("OrderJunctions: Could not create due to invalid PizzaId.");
 
             // Location / Ingredients are valid. Can successfully create
             //  the inventory junction
@@ -53,11 +54,11 @@ namespace PizzaStoreData.DataAccess.Repositories
             // OrderJunction PK is composed of 2 Ids:
             //  OrderId and PizzaId
             if (Id.Length != 2)
-                throw new InvalidIdException($"OrderJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"OrderJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
 
             OrderJunction orderJunction = Database.OrderJunction.Find(Id[0], Id[1]);
 
-            return orderJunction ?? throw new InvalidIdException($"OrderJunction: OrderId {Id[0]} + PizzaId {Id[1]} was not found in the OrderJunction table.");
+            return orderJunction ?? throw new e.InvalidIdException($"OrderJunction: OrderId {Id[0]} + PizzaId {Id[1]} was not found in the OrderJunction table.");
         }
 
         public void Update(OrderJunction entity)
@@ -75,6 +76,11 @@ namespace PizzaStoreData.DataAccess.Repositories
         public void SaveChanges()
         {
             Database.SaveChanges();
+        }
+
+        public List<OrderJunction> GetAllOrderJunctions()
+        {
+            return Database.OrderJunction.ToList();
         }
     }
 }

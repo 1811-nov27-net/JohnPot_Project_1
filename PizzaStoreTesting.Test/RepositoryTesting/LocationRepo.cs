@@ -1,6 +1,7 @@
 ﻿using System;
 using Xunit;
 using db = PizzaStoreData.DataAccess;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -30,11 +31,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Order was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
             // Order junction was removed              
-            Assert.Throws<db.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
             // Location was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
+            Assert.Throws<e.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
 
         }
         [Fact]
@@ -55,9 +56,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             // Assert
             // User was updated
             Assert.NotNull(userDefaultLocationId);
-            Assert.Null(repo.dbUser.DefaultLocation);
+            Assert.Null(repo.dbUser.DefaultLocationId);
             // Location was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
+            Assert.Throws<e.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
         }
         [Fact]
         public void LocationDeleteRemovesFromInventoryJunctionTable()
@@ -80,9 +81,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // InventoryJunction was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, ingredientId));
             // Location was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
+            Assert.Throws<e.InvalidIdException>(() => repo.locationRepo.GetById(locationId));
 
         }
     }

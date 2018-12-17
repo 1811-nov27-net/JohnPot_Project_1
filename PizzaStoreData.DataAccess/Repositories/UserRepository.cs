@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
     public class UserRepository : lib.IRepository<User>
     {
-        private PizzaStoreDBContext Database { get; set; }
+        public  PizzaStoreDBContext Database { get; set; }
 
         public UserRepository(PizzaStoreDBContext database)
         {
@@ -60,11 +61,15 @@ namespace PizzaStoreData.DataAccess.Repositories
         {
             // User has only 1 Id as PK
             if (Id.Length != 1)
-                throw new InvalidIdException($"User: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"User: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
             User user = Database.User.Find(Id[0]);
 
-            return user ?? throw new InvalidIdException($"UserId {Id[0]} was not found in the User table.");
+            return user ?? throw new e.InvalidIdException($"UserId {Id[0]} was not found in the User table.");
+        }
+        public List<User> GetAllUsers()
+        {
+            return Database.User.ToList();
         }
 
         public void Update(User entity)

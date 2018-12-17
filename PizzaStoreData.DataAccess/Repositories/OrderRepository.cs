@@ -4,16 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
     public class OrderRepository : lib.IRepository<Order>
     {
         private PizzaStoreDBContext Database { get; set; }
+        public OrderJunctionRepository orderJunctionRepo;
+        public PizzaJunctionRepository pizzaJunctionRepo;
 
         public OrderRepository(PizzaStoreDBContext database)
         {
             Database = database ?? throw new ArgumentNullException(nameof(database));
+            orderJunctionRepo = new OrderJunctionRepository(database);
+            pizzaJunctionRepo = new PizzaJunctionRepository(database);
+
             Database.Database.EnsureCreated();
         }
 
@@ -57,11 +63,15 @@ namespace PizzaStoreData.DataAccess.Repositories
         {
             // Order only has one Id as PK
             if (Id.Length != 1)
-                throw new InvalidIdException($"Order: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"Order: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
             Order order = Database.Order.Find(Id[0]);
 
-            return order ?? throw new InvalidIdException($"OrderId {Id[0]} was not found in the Order table.");
+            return order ?? throw new e.InvalidIdException($"OrderId {Id[0]} was not found in the Order table.");
+        }
+        public List<Order> GetAllOrders()
+        {
+            return Database.Order.ToList();
         }
 
         public void Update(Order entity)

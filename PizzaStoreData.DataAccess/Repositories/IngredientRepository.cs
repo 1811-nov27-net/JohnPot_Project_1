@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
     public class IngredientRepository : lib.IRepository<Ingredient>
     {
-        private PizzaStoreDBContext Database { get; set; }
+        public PizzaStoreDBContext Database { get; set; }
 
         public IngredientRepository(PizzaStoreDBContext database)
         {
@@ -56,11 +57,15 @@ namespace PizzaStoreData.DataAccess.Repositories
         {
             // Ingredient has only one Id as PK
             if (Id.Length != 1)
-                throw new InvalidIdException($"Ingredient: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"Ingredient: Invalid number of Ids provided. Expected: 1, Actual: {Id.Length}");
 
             Ingredient ingredient = Database.Ingredient.Find(Id[0]);
 
-            return ingredient ?? throw new InvalidIdException($"IngredientId {Id[0]} was not found in the Ingredient table.");
+            return ingredient ?? throw new e.InvalidIdException($"IngredientId {Id[0]} was not found in the Ingredient table.");
+        }
+        public List<Ingredient> GetAllIngredients()
+        {
+            return Database.Ingredient.ToList();
         }
 
         public void Update(Ingredient entity)

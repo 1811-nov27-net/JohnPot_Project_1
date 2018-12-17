@@ -17,7 +17,7 @@ namespace PizzaStoreData.DataAccess.Models
         //  this location has in stock.
         public int Count        { get; set; }
 
-        public Location Location     { get; set; }
-        public Ingredient Ingredient { get; set; }
+        public virtual Location Location     { get; set; }
+        public virtual Ingredient Ingredient { get; set; }
     }
 }

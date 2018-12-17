@@ -2,6 +2,7 @@
 using Xunit;
 using db = PizzaStoreData.DataAccess;
 using dbm = PizzaStoreData.DataAccess.Models;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -20,7 +21,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             Assert.NotNull(repo.ingredientRepo.GetById(ingredientId));
             // Searching for this inventory should fail since we 
             //  are passing in an invalid location id
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.GetById(invalidLocationId, ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.GetById(invalidLocationId, ingredientId));
 
             db.Models.InventoryJunction dbInventory = new db.Models.InventoryJunction
             { LocationId = invalidLocationId, IngredientId = ingredientId, Count = 1 };
@@ -28,7 +29,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Act
             // Assert
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.Create(dbInventory));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.Create(dbInventory));
         }
         [Fact]
         public void CreatingNewInventoryFailsWithInvalidIngredient()
@@ -43,7 +44,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             Assert.NotNull(repo.locationRepo.GetById(locationId));
             // Searching for this inventory should fail since we 
             //  are passing in an invalid ingredient id
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, invalidIngredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, invalidIngredientId));
 
             db.Models.InventoryJunction dbInventory = new db.Models.InventoryJunction
             { LocationId = locationId, IngredientId = invalidIngredientId, Count = 1 };
@@ -51,7 +52,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Act
             // Assert
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.Create(dbInventory));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.Create(dbInventory));
         }
         [Fact]
         public void CreatingNewInventorySucceedsWithValidLocationAndIngredient()
@@ -59,8 +60,8 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             // Arrange
             RepoTesting repo = new RepoTesting();
             repo.ResetDatabase("Inventory_Test_3");
-            dbm.Location dbLocation = new dbm.Location { Name = "a" };
-            dbm.Ingredient dbIngredient = new dbm.Ingredient { Name = "pepperoni", Price = 2.0m };
+            dbm.Location dbLocation = new dbm.Location {Id = 2, Name = "a" };
+            dbm.Ingredient dbIngredient = new dbm.Ingredient { Id = 2, Name = "pepperoni", Price = 2.0m };
             repo.locationRepo.Create(dbLocation);
             repo.ingredientRepo.Create(dbIngredient);
             repo.SaveChanges();

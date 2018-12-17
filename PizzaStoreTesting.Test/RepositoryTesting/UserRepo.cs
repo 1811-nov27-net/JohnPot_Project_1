@@ -2,6 +2,7 @@
 using Xunit;
 using db = PizzaStoreData.DataAccess;
 using dbm = PizzaStoreData.DataAccess.Models;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -31,11 +32,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Order was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderRepo.GetById(orderId));
             // Order junction was removed              
-            Assert.Throws<db.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderJunctionRepo.GetById(orderId, pizzaId));
             // User was removed              
-            Assert.Throws<db.InvalidIdException>(() => repo.userRepo.GetById(userId));
+            Assert.Throws<e.InvalidIdException>(() => repo.userRepo.GetById(userId));
 
         }
         [Fact]
@@ -54,6 +55,7 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             dbm.User dbUser = new dbm.User
             {
+                Id = 2,
                 FirstName = "John",
                 LastName = "Pot",
                 DefaultLocationId = dbLocation.Id
@@ -76,10 +78,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             int invalidLocationId = -1;
 
             // Ensure the locationId is invalid
-            Assert.Throws<db.InvalidIdException>(() => repo.locationRepo.GetById(invalidLocationId));
+            Assert.Throws<e.InvalidIdException>(() => repo.locationRepo.GetById(invalidLocationId));
 
             dbm.User dbUser = new dbm.User
             {
+                Id = 2,
                 FirstName = "John",
                 LastName = "Pot",
                 DefaultLocationId = invalidLocationId
@@ -87,11 +90,11 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Act
             // Create should throw exception
-            Assert.Throws<db.InvalidIdException>(() => repo.userRepo.Create(dbUser));
+            Assert.Throws<e.InvalidIdException>(() => repo.userRepo.Create(dbUser));
 
             // Assert
             // User should not be findable
-            Assert.Throws<db.InvalidIdException>(() => repo.userRepo.GetById(dbUser.Id));
+            Assert.Throws<e.InvalidIdException>(() => repo.userRepo.GetById(dbUser.Id));
         }
 
     }

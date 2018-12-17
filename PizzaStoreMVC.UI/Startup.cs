@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PizzaStoreData.DataAccess;
+using PizzaStoreData.DataAccess.Repositories;
+using db = PizzaStoreData.DataAccess.Models;
 
 namespace PizzaStoreMVC.UI
 {
@@ -19,6 +21,13 @@ namespace PizzaStoreMVC.UI
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            var options = new DbContextOptionsBuilder<PizzaStoreDBContext>()
+                .UseSqlServer(Configuration.GetConnectionString("MVCPizzaStore")).Options;
+            var database = new PizzaStoreDBContext(options);
+
+            db.Mapper.InitializeMapper(database);
+            SyncAllFromDatabase(database);
         }
 
         public IConfiguration Configuration { get; }
@@ -37,6 +46,12 @@ namespace PizzaStoreMVC.UI
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("MVCPizzaStore")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
+            services.AddScoped<LocationRepository>();
+            services.AddScoped<IngredientRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<OrderRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +71,7 @@ namespace PizzaStoreMVC.UI
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -64,5 +79,21 @@ namespace PizzaStoreMVC.UI
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+        public static void SyncAllFromDatabase(PizzaStoreDBContext database)
+        {
+            // Order here matters.
+            Sync.IngredientProcessor.Initialize(database);
+            Sync.IngredientProcessor.SyncFromDatabase();
+            // Location needs to know what ingredients are availabe
+            Sync.LocationProcessor.Initialize(database);
+            Sync.LocationProcessor.SyncFromDatabase();
+
+            Sync.UserProcessor.Initialize(database);
+            Sync.UserProcessor.SyncFromDatabase();
+
+
+        }
+
     }
 }

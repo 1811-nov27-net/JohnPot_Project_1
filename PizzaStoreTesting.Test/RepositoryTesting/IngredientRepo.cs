@@ -5,6 +5,7 @@ using System;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
 using PizzaStoreData.DataAccess.Repositories;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -33,9 +34,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Inventory Junction was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.inventoryRepo.GetById(locationId, ingredientId));
             // Ingredient was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.ingredientRepo.GetById(ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.ingredientRepo.GetById(ingredientId));
 
         }
         [Fact]
@@ -59,9 +60,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Pizza junction was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.pizzaRepo.GetById(pizzaId, ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.pizzaRepo.GetById(pizzaId, ingredientId));
             // Ingredient was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.ingredientRepo.GetById(ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.ingredientRepo.GetById(ingredientId));
         }
     }
 }

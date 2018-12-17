@@ -2,6 +2,7 @@ using System;
 using Xunit;
 using db = PizzaStoreData.DataAccess;
 using dbm = PizzaStoreData.DataAccess.Models;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreTesting.Test.RepositoryTesting
 {
@@ -38,15 +39,15 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
             dbm.PizzaJunction dbPizza = new dbm.PizzaJunction { IngredientId = invalidIngredientId, Count = 1 };
             
             // Ensure the invalid ingredientId is in fact invalid
-            Assert.Throws<db.InvalidIdException>(() => repo.ingredientRepo.GetById(invalidIngredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.ingredientRepo.GetById(invalidIngredientId));
 
             // Act
             // Creating the PizzaJunction should not work. 
-            Assert.Throws<db.InvalidIdException>(() => repo.pizzaRepo.Create(dbPizza));
+            Assert.Throws<e.InvalidIdException>(() => repo.pizzaRepo.Create(dbPizza));
 
             // Assert
             // Searching for this PizzaJunction should fail
-            Assert.Throws<db.InvalidIdException>(() => repo.pizzaRepo.GetById(dbPizza.PizzaId, repo.dbIngredient.Id));
+            Assert.Throws<e.InvalidIdException>(() => repo.pizzaRepo.GetById(dbPizza.PizzaId, repo.dbIngredient.Id));
         }
 
         [Fact]
@@ -73,9 +74,9 @@ namespace PizzaStoreTesting.Test.RepositoryTesting
 
             // Assert
             // Order junction was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.orderJunctionRepo.GetById(dbOrderJunction.OrderId, dbOrderJunction.PizzaId));
+            Assert.Throws<e.InvalidIdException>(() => repo.orderJunctionRepo.GetById(dbOrderJunction.OrderId, dbOrderJunction.PizzaId));
             // Pizza junction was removed
-            Assert.Throws<db.InvalidIdException>(() => repo.pizzaRepo.GetById(pizzaId, ingredientId));
+            Assert.Throws<e.InvalidIdException>(() => repo.pizzaRepo.GetById(pizzaId, ingredientId));
 
         }
 

@@ -17,7 +17,7 @@ namespace PizzaStoreData.DataAccess.Models
         public string  Name  { get; set; }
 
         // Navigation properties
-        public ICollection<InventoryJunction> InventoryJunction { get; set; }
-        public ICollection<PizzaJunction>     PizzaJunction     { get; set; }
+        public virtual ICollection<InventoryJunction> InventoryJunction { get; set; }
+        public virtual ICollection<PizzaJunction>     PizzaJunction     { get; set; }
     }
 }

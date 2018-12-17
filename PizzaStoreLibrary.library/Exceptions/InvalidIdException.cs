@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PizzaStoreData.DataAccess
+namespace PizzaStoreLibrary.library.Exceptions
 {
     public class InvalidIdException : Exception
     {

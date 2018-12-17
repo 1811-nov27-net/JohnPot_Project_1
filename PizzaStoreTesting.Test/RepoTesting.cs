@@ -46,15 +46,15 @@ namespace PizzaStoreTesting.Test
             orderRepo = new OrderRepository(database);
 
             // Going to add one entry to each repo for testing purposes.
-            dbIngredient = new dbm.Ingredient { Name = "cheese", Price = 1.50m };
+            dbIngredient = new dbm.Ingredient { Id = 9999, Name = "cheese", Price = 1.50m };
             ingredientRepo.Create(dbIngredient);
-            dbLocation = new dbm.Location { Name = "John's Pizzaria" };
+            dbLocation = new dbm.Location { Id = 9999, Name = "John's Pizzaria" };
             locationRepo.Create(dbLocation);
             
             // Save should populate the above entities' Ids
             SaveChanges();
 
-            dbUser = new dbm.User { FirstName = "John", LastName = "Pot", DefaultLocationId = dbLocation.Id };
+            dbUser = new dbm.User { Id = 9999, FirstName = "John", LastName = "Pot", DefaultLocationId = dbLocation.Id };
             userRepo.Create(dbUser);
             dbInventory = new dbm.InventoryJunction { LocationId = dbLocation.Id, IngredientId = dbIngredient.Id, Count = 100 };
             inventoryRepo.Create(dbInventory);
@@ -66,7 +66,7 @@ namespace PizzaStoreTesting.Test
             // Update user id for order usage
             SaveChanges();
 
-            dbOrder = new dbm.Order { LocationId = dbLocation.Id, UserId = dbUser.Id, TimePlaced = DateTime.Now, TotalPrice = 20.50m };
+            dbOrder = new dbm.Order { Id = 9999, LocationId = dbLocation.Id, UserId = dbUser.Id, TimePlaced = DateTime.Now, TotalPrice = 20.50m };
             orderRepo.Create(dbOrder);
             
             // Order junction needs order to have an Id

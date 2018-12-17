@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lib = PizzaStoreLibrary.library;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreData.DataAccess.Repositories
 {
@@ -57,11 +58,11 @@ namespace PizzaStoreData.DataAccess.Repositories
             // PizzaJunction PK is composed of 2 Ids:
             //  PizzaId and IngredientId
             if (Id.Length != 2)
-                throw new InvalidIdException($"PizzaJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
+                throw new e.InvalidIdException($"PizzaJunction: Invalid number of Ids provided. Expected: 2, Actual: {Id.Length}");
 
             PizzaJunction pizzaJunction = Database.PizzaJunction.Find(Id[0], Id[1]);
 
-            return pizzaJunction ?? throw new InvalidIdException($"Pizza: Id {Id[0]} + IngredientId {Id[1]} was not found in the PizzaJunction table.");
+            return pizzaJunction ?? throw new e.InvalidIdException($"Pizza: Id {Id[0]} + IngredientId {Id[1]} was not found in the PizzaJunction table.");
         }
 
         public void Update(PizzaJunction entity)
@@ -79,6 +80,11 @@ namespace PizzaStoreData.DataAccess.Repositories
         public void SaveChanges()
         {
             Database.SaveChanges();
+        }
+
+        public List<PizzaJunction> GetAllPizzaJunctions()
+        {
+            return Database.PizzaJunction.ToList();
         }
     }
 }

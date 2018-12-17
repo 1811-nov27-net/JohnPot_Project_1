@@ -22,43 +22,49 @@ namespace PizzaStoreData.DataAccess
         #region Standard Tables
         // Table of all possible ingredients a location can
         //  have stocked with their respective price
-        public DbSet<Ingredient> Ingredient { get; set; }
+        public virtual DbSet<Ingredient> Ingredient { get; set; }
         // Table of all location names
-        public DbSet<Location> Location { get; set; }
+        public virtual DbSet<Location> Location { get; set; }
         // Table of all orders with what location it was placed
         //  at, what user placed it, time placed, and total
         //  cost of the order
-        public DbSet<Order> Order { get; set; }
+        public virtual DbSet<Order> Order { get; set; }
         // Table of all users with first and last names, 
         //  and potential default location to order from
-        public DbSet<User> User { get; set; }
+        public virtual DbSet<User> User { get; set; }
         #endregion
 
         #region Junction Tables
         // Can have any number of locations which each have
         //  any number of ingredients
-        public DbSet<InventoryJunction> InventoryJunction { get; set; }
+        public virtual DbSet<InventoryJunction> InventoryJunction { get; set; }
         // Can have any number of orders which each have any
         //  number of pizzas
-        public DbSet<OrderJunction> OrderJunction { get; set; }
+        public virtual DbSet<OrderJunction> OrderJunction { get; set; }
         // Can have any number of pizzas which each can have
         //  any number of ingredients
-        public DbSet<PizzaJunction> PizzaJunction { get; set; }
+        public virtual DbSet<PizzaJunction> PizzaJunction { get; set; }
         #endregion
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
+
             modelBuilder.Entity<Ingredient>(entity =>
             {
                 entity.ToTable("Ingredient", "MVCPizzaStore");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .IsRequired();
 
                 entity.HasIndex(e => e.Name)
                     .IsUnique();
@@ -72,6 +78,10 @@ namespace PizzaStoreData.DataAccess
             {
                 entity.ToTable("Location", "MVCPizzaStore");
 
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
                 entity.HasIndex(e => e.Name)
                     .IsUnique();
 
@@ -84,6 +94,10 @@ namespace PizzaStoreData.DataAccess
             {
                 entity.ToTable("User", "MVCPizzaStore");
 
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
                 entity.Property(e => e.FirstName)
                     .IsRequired()
                     .HasMaxLength(128);
@@ -91,21 +105,23 @@ namespace PizzaStoreData.DataAccess
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasMaxLength(128);
-
-                entity.HasOne(l => l.DefaultLocation)
-                    .WithMany(p => p.User)
-                    .HasForeignKey(d => d.DefaultLocationId);
-
+                
             });
 
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.ToTable("Order", "MVCPizzaStore");
 
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
                 entity.Property(e => e.LocationId)
+                    .ValueGeneratedNever()
                     .IsRequired();
 
                 entity.Property(e => e.UserId)
+                    .ValueGeneratedNever()
                     .IsRequired();
 
                 entity.HasOne(e => e.Location)
@@ -122,6 +138,14 @@ namespace PizzaStoreData.DataAccess
                 entity.HasKey(e => new { e.LocationId, e.IngredientId });
 
                 entity.ToTable("InventoryJunction", "MVCPizzaStore");
+
+                entity.Property(e => e.LocationId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
+                entity.Property(e => e.IngredientId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
 
                 entity.HasOne(d => d.Ingredient)
                     .WithMany(i => i.InventoryJunction)
@@ -140,6 +164,14 @@ namespace PizzaStoreData.DataAccess
 
                 entity.ToTable("PizzaJunction", "MVCPizzaStore");
 
+                entity.Property(e => e.PizzaId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
+                entity.Property(e => e.IngredientId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
                 entity.HasOne(d => d.Ingredient)
                     .WithMany(i => i.PizzaJunction)
                     .HasForeignKey(d => d.IngredientId)
@@ -154,10 +186,12 @@ namespace PizzaStoreData.DataAccess
                 entity.ToTable("OrderJunction", "MVCPizzaStore");
 
                 entity.Property(e => e.OrderId)
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .IsRequired();
 
                 entity.Property(e => e.PizzaId)
-                    .ValueGeneratedNever(); 
+                    .ValueGeneratedNever()
+                    .IsRequired();
 
                 entity.HasOne(d => d.Order)
                     .WithMany(i => i.OrderJunction)

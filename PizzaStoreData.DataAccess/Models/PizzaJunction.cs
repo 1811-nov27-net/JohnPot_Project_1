@@ -20,7 +20,7 @@ namespace PizzaStoreData.DataAccess.Models
         public int Count { get; set; }
 
         // Navigation Property
-        public Ingredient Ingredient { get; set; }
-        public ICollection<OrderJunction> OrderJunction { get; set; }
+        public virtual Ingredient Ingredient { get; set; }
+        public virtual ICollection<OrderJunction> OrderJunction { get; set; }
     }
 }
