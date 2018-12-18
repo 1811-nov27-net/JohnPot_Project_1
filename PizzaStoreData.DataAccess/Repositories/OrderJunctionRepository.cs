@@ -24,13 +24,13 @@ namespace PizzaStoreData.DataAccess.Repositories
 
             // Ensure the Order exists before trying to create the junction
             // (GetById will throw if not)
-            OrderRepository orderRepo = new OrderRepository(Database);
-            orderRepo.GetById(entity.OrderId);
+            //OrderRepository orderRepo = new OrderRepository(Database);
+            //orderRepo.GetById(entity.OrderId);
             // Make sure the PizzaJunction also exists
-            List<PizzaJunction> pizzaList = Database.PizzaJunction
-                .Where(p => p.PizzaId == entity.PizzaId).ToList();
-            if (pizzaList.Count == 0)
-                throw new e.InvalidIdException("OrderJunctions: Could not create due to invalid PizzaId.");
+            //List<PizzaJunction> pizzaList = Database.PizzaJunction
+            //    .Where(p => p.PizzaId == entity.PizzaId).ToList();
+            //if (pizzaList.Count == 0)
+              //  throw new e.InvalidIdException("OrderJunctions: Could not create due to invalid PizzaId.");
 
             // Location / Ingredients are valid. Can successfully create
             //  the inventory junction

@@ -193,15 +193,15 @@ namespace PizzaStoreData.DataAccess
                     .ValueGeneratedNever()
                     .IsRequired();
 
-                entity.HasOne(d => d.Order)
-                    .WithMany(i => i.OrderJunction)
-                    .HasForeignKey(d => d.OrderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                //entity.HasOne(d => d.Order)
+                //    .WithMany(i => i.OrderJunction)
+                //    .HasForeignKey(d => d.OrderId)
+                //    .OnDelete(DeleteBehavior.ClientSetNull);
 
-                entity.HasOne(d => d.PizzaJunction)
-                    .WithMany(i => i.OrderJunction)
-                    .HasForeignKey(d => new { d.OrderId, d.PizzaId })
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                //entity.HasOne(d => d.PizzaJunction)
+                //    .WithMany(i => i.OrderJunction)
+                //    .HasForeignKey(d => new { d.OrderId, d.PizzaId })
+                //    .OnDelete(DeleteBehavior.ClientSetNull);
             });
         }
     }

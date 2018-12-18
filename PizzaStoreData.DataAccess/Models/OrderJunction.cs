@@ -14,7 +14,7 @@ namespace PizzaStoreData.DataAccess.Models
         [Key, Column(Order = 1)]
         public int PizzaId { get; set; }
 
-        public virtual Order Order { get; set; }
-        public virtual PizzaJunction PizzaJunction { get; set; }
+        //public virtual Order Order { get; set; }
+        //public virtual PizzaJunction PizzaJunction { get; set; }
     }
 }

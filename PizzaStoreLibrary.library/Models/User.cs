@@ -9,6 +9,8 @@ namespace PizzaStoreLibrary.library.Models
     public class User
     {
         public static List<User> Users;
+
+
         static User()
         {
             Users = new List<User>();
@@ -24,6 +26,11 @@ namespace PizzaStoreLibrary.library.Models
             User user = Users.FirstOrDefault(u => u.Id == id);
             return user ?? throw new e.InvalidIdException($"User GetById could not find {id}");
         }
+        public static User GetByName(string firstName, string lastName)
+        {
+            User user = Users.FirstOrDefault(u => u.FirstName == firstName && u.LastName == lastName);
+            return user ?? throw new e.InvalidNameException($"User GetByName could not find {firstName} {lastName}");
+        }
 
         private static int currentId = 0;
         private static int NextId
@@ -32,11 +39,11 @@ namespace PizzaStoreLibrary.library.Models
             {
                 int? newId = Users.OrderByDescending(l => l.id).FirstOrDefault()?.id;
 
-                return newId == null ? 0 : currentId = (int)++newId;
+                return newId == null ? 1 : currentId = (int)++newId;
             }
         }
 
-        private int id;
+        private int id = 0;
         public int Id
         {
             get
@@ -48,7 +55,7 @@ namespace PizzaStoreLibrary.library.Models
                 //  You can't use the id if its invalid
                 // 0 = invalid id (default int)
                 //if (id == 0)
-                  //  throw new e.InvalidIdAccessException($"User {FirstName} {LastName} has not been provided a valid Id.");
+                    //throw new e.InvalidIdAccessException($"User {FirstName} {LastName} has not been provided a valid Id.");
 
                 return id;
             }

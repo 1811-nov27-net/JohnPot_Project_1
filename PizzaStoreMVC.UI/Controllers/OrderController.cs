@@ -8,6 +8,9 @@ using lib = PizzaStoreLibrary.library.Models;
 using db = PizzaStoreData.DataAccess.Models;
 using dbr = PizzaStoreData.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using view = PizzaStoreMVC.UI.Models;
+using System.Data;
+using e = PizzaStoreLibrary.library.Exceptions;
 
 namespace PizzaStoreMVC.UI.Controllers
 {
@@ -23,20 +26,76 @@ namespace PizzaStoreMVC.UI.Controllers
         // GET: Order
         public ActionResult Index()
         {
-            return View(lib.Order.Orders);
+            Sync.OrderProcessor.Initialize(orderRepo.Database);
+            Sync.OrderProcessor.SyncFromDatabase();
+
+            return View(view.Mapper.Map(lib.Order.Orders));
         }
 
         // GET: Order/Details/5
         public ActionResult Details(int id)
         {
-            return View(lib.Order.GetById(id));
+            return View(view.Mapper.Map(lib.Order.GetById(id)));
         }
 
         // GET: Order/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            return View();
+            try
+            {
+                lib.Order libOrder = lib.Order.GetById(id);
+                view.Order formOrder = view.Mapper.Map(libOrder);
+
+                return View(formOrder);
+
+            }
+            catch
+            {
+                return View(new view.Order());
+            }
+
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreatePizza(view.Order formOrder, string AddPizza, string PlaceOrder)
+        {
+            lib.Order libOrder;
+            if (formOrder.Id != 0)
+            {
+                libOrder = lib.Order.GetById(formOrder.Id);
+            }
+            else
+                libOrder = view.Mapper.Map(formOrder);
+
+            if (AddPizza != null)
+                libOrder.AddPizzaToOrder(formOrder.pizza);
+            else if(PlaceOrder != null)
+            {
+                // Place the order
+                libOrder.TimePlaced = DateTime.Now;
+                db.Order dbOrder;
+                List<db.OrderJunction> orderJunctionList;
+                List<db.PizzaJunction> pizzaJunctionList;
+                dbOrder = db.Mapper.Map(libOrder, out orderJunctionList, out pizzaJunctionList);
+
+                foreach (var pizzaJunction in pizzaJunctionList)
+                {
+                    orderRepo.pizzaJunctionRepo.Create(pizzaJunction);
+                }
+                foreach (var orderJunction in orderJunctionList)
+                {
+                    orderRepo.orderJunctionRepo.Create(orderJunction);
+                }
+                orderRepo.Create(dbOrder);
+                orderRepo.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Create), new { libOrder.Id });
+        }
+
 
         // POST: Order/Create
         [HttpPost]
@@ -63,45 +122,6 @@ namespace PizzaStoreMVC.UI.Controllers
                 orderRepo.Create(dbOrder);
                 orderRepo.SaveChanges();
 
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        
-        // GET: Order/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View(lib.Order.GetById(id));
-        }
-
-        // POST: Order/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                lib.Order libOrder = lib.Order.GetById(id);
-                lib.Order.Orders.Remove(libOrder);
-                db.Order dbOrder;
-                List<db.OrderJunction> orderJunctionList;
-                List<db.PizzaJunction> pizzaJunctionList;
-                dbOrder = db.Mapper.Map(libOrder, out orderJunctionList, out pizzaJunctionList);
-
-                foreach (var orderJunction in orderJunctionList)
-                {
-                    orderRepo.orderJunctionRepo.Delete(orderJunction);
-                }
-                foreach (var pizzaJunction in pizzaJunctionList)
-                {
-                    orderRepo.pizzaJunctionRepo.Delete(pizzaJunction);
-                }
-                orderRepo.Delete(dbOrder);
-                orderRepo.SaveChanges();
 
                 return RedirectToAction(nameof(Index));
             }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PizzaStoreLibrary.library.Models.User>
+﻿@model IEnumerable<PizzaStoreMVC.UI.Models.User>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,13 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.DefaultLocationId)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DefaultLocationName)
             </th>
             <th></th>
         </tr>
@@ -28,13 +28,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.DefaultLocationId)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                <dd class="col-sm-10">
+                    @if (item.DefaultLocationName == null)
+                    {
+                        <p>None</p>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => item.DefaultLocationName)
+                    }
+                </dd>
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit",       new { id = item.Id }) |

@@ -10,7 +10,7 @@ namespace PizzaStoreData.DataAccess.Repositories
 {
     public class OrderRepository : lib.IRepository<Order>
     {
-        private PizzaStoreDBContext Database { get; set; }
+        public PizzaStoreDBContext Database { get; set; }
         public OrderJunctionRepository orderJunctionRepo;
         public PizzaJunctionRepository pizzaJunctionRepo;
 

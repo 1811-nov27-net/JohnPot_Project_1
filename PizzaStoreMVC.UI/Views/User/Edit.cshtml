@@ -1,4 +1,4 @@
-﻿@model PizzaStoreLibrary.library.Models.User
+﻿@model PizzaStoreMVC.UI.Models.User
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,11 +13,6 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DefaultLocationId" class="control-label"></label>
-                <input asp-for="DefaultLocationId" class="form-control" />
-                <span asp-validation-for="DefaultLocationId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -26,6 +21,16 @@
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @{
+                    var selectList = new SelectList(PizzaStoreLibrary.library.Models.Location.Locations.Select(l => l.Name).ToList());
+                }
+
+                <label asp-for="DefaultLocationName" class="control-label"></label>
+                @Html.DropDownListFor(u => u.DefaultLocationName, selectList, "None")
+                <span asp-validation-for="DefaultLocationName" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

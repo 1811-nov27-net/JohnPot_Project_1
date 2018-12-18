@@ -23,7 +23,7 @@ namespace PizzaStoreLibrary.library.Models
             Pizzas.Add(this);
         }
 
-        private static int currentId = 0;
+        private static int currentId = 1;
         private static int NextId
         {
             get
@@ -32,6 +32,13 @@ namespace PizzaStoreLibrary.library.Models
 
                 return newId == null ? 0 : currentId = (int)++newId;
             }
+        }
+
+        public static Pizza GetById(int Id)
+        {
+            Pizza pizza = Pizzas.FirstOrDefault(o => o.Id == Id);
+
+            return pizza ?? throw new e.InvalidIdException($"Pizza GetById could not find {Id}.");
         }
 
         private int id;

@@ -16,13 +16,17 @@ namespace PizzaStoreMVC.UI.Models
         {
             view.User viewUser = new view.User
             {
+                Id = libUser.Id,
                 FirstName = libUser.FirstName,
                 LastName = libUser.LastName
             };
 
             try
             {
-                viewUser.DefaultLocationName = lib.Location.GetById((int)libUser.DefaultLocationId).Name;
+                if (libUser.DefaultLocationId != null)
+                    viewUser.DefaultLocationName = lib.Location.GetById((int)libUser.DefaultLocationId).Name;
+                else
+                    viewUser.DefaultLocationName = null;
             }
             catch(e.InvalidIdException)
             {
@@ -40,6 +44,8 @@ namespace PizzaStoreMVC.UI.Models
                 FirstName = viewUser.FirstName,
                 LastName = viewUser.LastName
             };
+            if (viewUser.Id != 0)
+                libUser.Id = viewUser.Id;
 
             try
             {
@@ -53,6 +59,80 @@ namespace PizzaStoreMVC.UI.Models
             return libUser;
         }
 
-        #endregion  
+        /***** Library List -> View List *****/
+        public static List<view.User> Map(List<lib.User> libUserList)
+        {
+            List<view.User> viewUserList = new List<view.User>();
+            foreach (var libUser in libUserList)
+            {
+                viewUserList.Add(Map(libUser));
+            }
+            return viewUserList;
+        }
+
+        #endregion
+
+        #region Order Mapping
+        /***** Library -> View *****/
+        public static view.Order Map(lib.Order libOrder)
+        {
+            view.Order viewOrder = new view.Order
+            {
+                Id = libOrder.Id,
+                TimePlaced = libOrder.TimePlaced
+            };
+
+            try
+            {
+                viewOrder.Location      = lib.Location.GetById(libOrder.LocationId).Name;
+                lib.User u = lib.User.GetById(libOrder.UserId);
+                viewOrder.UserName = u.FirstName + " " + u.LastName;
+            }
+            catch (e.InvalidIdException e)
+            {
+                throw (e);
+            }
+
+            return viewOrder;
+        }
+        /***** Library List -> View List *****/
+        public static List<view.Order> Map(List<lib.Order> libOrderList)
+        {
+            List<view.Order> viewOrderList = new List<view.Order>();
+
+            foreach (var libOrder in libOrderList)
+            {
+                viewOrderList.Add(Map(libOrder));
+            }
+
+            return viewOrderList;
+        }
+        /***** View -> Library *****/
+        public static lib.Order Map(view.Order viewOrder)
+        {
+            lib.Order libOrder = new lib.Order
+            {
+                TimePlaced = viewOrder.TimePlaced,
+
+            };
+            if (viewOrder.Id != 0)
+                libOrder.Id = viewOrder.Id;
+            
+            try
+            {
+                libOrder.LocationId = lib.Location.GetByName(viewOrder.Location).Id;
+                libOrder.UserId = lib.User.GetByName(viewOrder.UserFirstName, viewOrder.UserLastName).Id;
+            }
+            catch (e.InvalidNameException e)
+            {
+                throw (e);
+            }
+
+            return libOrder;
+        }
+        
+
+
+        #endregion
     }
 }

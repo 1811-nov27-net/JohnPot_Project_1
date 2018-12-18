@@ -19,14 +19,15 @@
         </dd>
         <dt class="col-sm-2">
             Inventory
+            <br/>
         </dt>
         <dd>
             @foreach (var ingredient in Model.Inventory)
             {
                 <dl class="row">
-                    <dt class="col-sm-2">
+                    <dd class="col-sm-2">
                         @PizzaStoreLibrary.library.Models.Ingredient.GetById(ingredient.Key).Name
-                    </dt>
+                    </dd>
                     <dd class="col-sm-10">
                         @ingredient.Value
                     </dd>

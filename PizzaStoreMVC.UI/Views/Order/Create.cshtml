@@ -1,4 +1,4 @@
-﻿@model PizzaStoreLibrary.library.Models.Order
+﻿@model PizzaStoreMVC.UI.Models.Order
 
 @{
     ViewData["Title"] = "Create";
@@ -10,36 +10,55 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+            @*<form action="" method="post">*@
+        <form asp-Action="CreatePizza">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
+                @{
+                    var locationSelectList = new SelectList(PizzaStoreLibrary.library.Models.Location.Locations.Select(l => l.Name).ToList());
+                }
+
+                <label asp-for="Location" class="control-label"></label>
+                @Html.DropDownListFor(o => o.Location, locationSelectList, "None")
+                <span asp-validation-for="Location" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <input asp-for="LocationId" class="form-control" />
-                <span asp-validation-for="LocationId" class="text-danger"></span>
+
+                <label asp-for="UserName" class="control-label"></label>
+                @Html.DropDownListFor(o => o.UserName, Model.userNames, "None")
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="list-group">
+                @if(Model.Id != 0)
+                {
+                    int count = 1;
+                    foreach(var pizza in PizzaStoreLibrary.library.Models.Order.GetById(Model.Id).Pizzas)
+                    {
+                        <span>Pizza: @(count++) Price: @(pizza.Price)</span>
+                        <span>Toppings: </span>
+                        foreach(var topping in pizza.Ingredients)
+                        {
+                            <span> @topping.Name + </span>
+                        }
+                    }
+                    <span>Total Price: @(PizzaStoreLibrary.library.Models.Order.GetById(Model.Id).TotalPrice)</span>
+                }
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
+                <label asp-for="PizzaToppings" class="table-primary"></label>
+                @foreach (var ingredient in PizzaStoreLibrary.library.Models.Ingredient.Ingredients)
+                {
+                    @ingredient.Name
+                    <input asp-for=PizzaToppings[ingredient.Name] class="form-control" />
+                }
+                <span asp-validation-for="PizzaToppings" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TimePlaced" class="control-label"></label>
-                <input asp-for="TimePlaced" class="form-control" />
-                <span asp-validation-for="TimePlaced" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalPrice" class="control-label"></label>
-                <input asp-for="TotalPrice" class="form-control" />
-                <span asp-validation-for="TotalPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
+            @Html.HiddenFor(m => m.Id)
+
+            <input type="submit" value="Add Pizza To Order" name="AddPizza" id="AddPizza" />
+            <input type="submit" value="Place Order" name="PlaceOrder" id="PlaceOrder" />
         </form>
     </div>
 </div>

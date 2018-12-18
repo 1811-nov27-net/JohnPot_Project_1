@@ -16,6 +16,7 @@ namespace PizzaStoreLibrary.library.Models
 
         public Order()
         {
+            Id = NextId;
             Orders.Add(this);
         }
 
@@ -26,7 +27,7 @@ namespace PizzaStoreLibrary.library.Models
             {
                 int? newId = Orders.OrderByDescending(l => l.id).FirstOrDefault()?.id;
 
-                return newId == null ? 0 : currentId = (int)++newId;
+                return newId == null ? 1 : currentId = (int)++newId;
             }
         }
 
@@ -42,9 +43,6 @@ namespace PizzaStoreLibrary.library.Models
         {
             get
             {
-                if (id == 0)
-                    throw new e.InvalidIdAccessException($"Order {Id} has not been provided a valid Id.");
-
                 return id;
             }
 
