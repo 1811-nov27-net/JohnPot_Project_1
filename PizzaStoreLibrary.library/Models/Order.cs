@@ -8,6 +8,7 @@ namespace PizzaStoreLibrary.library.Models
 {
     public class Order
     {
+        public static bool OrderHasBeenPlace = false;
         public static List<Order> Orders;
         static Order()
         {

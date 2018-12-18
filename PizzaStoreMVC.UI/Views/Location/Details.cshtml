@@ -19,7 +19,7 @@
         </dd>
         <dt class="col-sm-2">
             Inventory
-            <br/>
+            <br />
         </dt>
         <dd>
             @foreach (var ingredient in Model.Inventory)
@@ -33,6 +33,22 @@
                     </dd>
                 </dl>
             }
+        </dd>
+        <dd class="col-sm-10">
+            Order History:
+            <ul>
+                @foreach (var order in PizzaStoreLibrary.library.Models.Order.Orders.Where(o => o.LocationId == Model.Id).ToList())
+                {
+                    <li>
+                        @order.TotalPrice
+                        @order.TimePlaced
+                        @{
+                            PizzaStoreLibrary.library.Models.User user = PizzaStoreLibrary.library.Models.User.GetById(order.UserId);
+                            <pre>@user.FirstName @user.LastName</pre>
+                         }
+                    </li>
+                }
+            </ul>
         </dd>
     </dl>
 </div>

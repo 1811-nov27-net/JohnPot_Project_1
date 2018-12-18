@@ -54,9 +54,6 @@ namespace PizzaStoreData.DataAccess.Models
             inventoryList = new List<db.InventoryJunction>();
             foreach(var inventory in libLocation.Inventory)
             {
-                if (inventory.Value == 0)
-                    continue;
-
                 db.InventoryJunction dbInventory = new db.InventoryJunction
                 {
                     IngredientId = inventory.Key,
@@ -78,7 +75,8 @@ namespace PizzaStoreData.DataAccess.Models
             };
 
             // Populate the inventory
-            List<db.InventoryJunction> inventories = inventoryRepo.GetAllInventoryJunctions();
+            List<db.InventoryJunction> inventories = inventoryRepo.GetAllInventoryJunctions()
+                .Where(i => i.LocationId == libLocation.Id).ToList();
             foreach(var inventory in inventories)
             {
                 libLocation.UpdateInventory(ingredientRepo.GetById(inventory.IngredientId).Name, inventory.Count);
@@ -168,10 +166,12 @@ namespace PizzaStoreData.DataAccess.Models
                 UserId = dbOrder.UserId,
                 TimePlaced = dbOrder.TimePlaced
             };
-            List<db.OrderJunction> orderJunctions = orderJunctionRepo.GetAllOrderJunctions();
+            List<db.OrderJunction> orderJunctions = orderJunctionRepo.GetAllOrderJunctions()
+                .Where(o => o.OrderId == dbOrder.Id).ToList();
             foreach (var orderJunction in orderJunctions)
             {
-                List<db.PizzaJunction> pizzaJunctions = pizzaRepo.GetAllPizzaJunctions();
+                List<db.PizzaJunction> pizzaJunctions = pizzaRepo.GetAllPizzaJunctions()
+                    .Where(p => p.PizzaId == orderJunction.PizzaId).ToList();
                 lib.Pizza libPizza = new lib.Pizza
                 {
                     Id = orderJunction.PizzaId

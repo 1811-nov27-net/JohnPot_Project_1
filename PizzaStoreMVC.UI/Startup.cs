@@ -92,8 +92,8 @@ namespace PizzaStoreMVC.UI
             Sync.UserProcessor.Initialize(database);
             Sync.UserProcessor.SyncFromDatabase();
 
-
+            Sync.OrderProcessor.Initialize(database);
+            Sync.OrderProcessor.SyncFromDatabase();
         }
-
     }
 }

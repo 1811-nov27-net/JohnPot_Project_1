@@ -30,14 +30,14 @@
             </div>
 
             <div class="list-group">
-                @if(Model.Id != 0)
+                @if (Model.Id != 0)
                 {
                     int count = 1;
-                    foreach(var pizza in PizzaStoreLibrary.library.Models.Order.GetById(Model.Id).Pizzas)
+                    foreach (var pizza in PizzaStoreLibrary.library.Models.Order.GetById(Model.Id).Pizzas)
                     {
                         <span>Pizza: @(count++) Price: @(pizza.Price)</span>
                         <span>Toppings: </span>
-                        foreach(var topping in pizza.Ingredients)
+                        foreach (var topping in pizza.Ingredients)
                         {
                             <span> @topping.Name + </span>
                         }
@@ -57,8 +57,12 @@
 
             @Html.HiddenFor(m => m.Id)
 
+
+
             <input type="submit" value="Add Pizza To Order" name="AddPizza" id="AddPizza" />
             <input type="submit" value="Place Order" name="PlaceOrder" id="PlaceOrder" />
+            <input type="submit" value="Place Order To Default Location" name="Default" id="Default" />
+            <input type="submit" value="Suggest Order" name="Suggest" id="Suggest" />
         </form>
     </div>
 </div>

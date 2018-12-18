@@ -35,6 +35,24 @@
                 @Html.DisplayFor(model => Model.DefaultLocationName)
             }
         </dd>
+        <dd class="col-sm-10">
+            Orders History:
+                <ul>
+            @foreach(var order in PizzaStoreLibrary.library.Models.Order.Orders.Where(o => o.UserId == Model.Id).ToList())
+            {
+                    <li>
+                        @order.TotalPrice
+                        @order.TimePlaced
+                        @{ 
+                            PizzaStoreLibrary.library.Models.Location location =
+                            PizzaStoreLibrary.library.Models.Location.GetById(order.LocationId);
+
+                            <pre>@location.Name</pre>
+                        }
+                    </li>
+            }
+                </ul>
+        </dd>
     </dl>
 </div>
 <div>

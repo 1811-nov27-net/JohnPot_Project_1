@@ -10,9 +10,21 @@ namespace PizzaStoreMVC.UI.Models
 {
     public class Order
     {
+        public enum Sort
+        {
+            Earliest,
+            Latest,
+            Cheapest,
+            MostExpensive
+        }
         public int    Id            { get; set; }
         public string Location      { get; set; }
         public DateTime TimePlaced  { get; set; }
+        public decimal TotalPrice
+        {
+            get;
+            set;
+        }
         public string UserName { get; set; }
         public string UserFirstName
         {

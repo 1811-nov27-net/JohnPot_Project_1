@@ -88,6 +88,23 @@ namespace PizzaStoreLibrary.library.Models
             Ingredient ingredient = Ingredient.GetById(ingredientId);
             UpdateInventory(ingredient.Name, count);
         }
-        
+        public void UpdateInventory(List<KeyValuePair<string, int>> inventory)
+        {
+            // Check the inventory for amount of ingredients
+            foreach(var ingredient in inventory)
+            {
+                int ingredientId = Ingredient.GetByName(ingredient.Key).Id;
+                if(Inventory[ingredientId] < ingredient.Value)
+                    throw new e.InsufficientIngredientException($"Location {Name} does not contain enough {ingredient} to fulfill depletion request");
+            }
+            // Actually update the inventory since theres enough ingredients
+            foreach(var ingredient in inventory)
+            {
+                int ingredientId = Ingredient.GetByName(ingredient.Key).Id;
+                // TODO: FIX NEGATIVE SIGN HACK
+                UpdateInventory(ingredientId, -ingredient.Value);
+            }
+        }
+
     }
 }

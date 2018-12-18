@@ -79,7 +79,9 @@ namespace PizzaStoreMVC.UI.Models
             view.Order viewOrder = new view.Order
             {
                 Id = libOrder.Id,
-                TimePlaced = libOrder.TimePlaced
+                TimePlaced = libOrder.TimePlaced,
+                TotalPrice = libOrder.TotalPrice
+                
             };
 
             try

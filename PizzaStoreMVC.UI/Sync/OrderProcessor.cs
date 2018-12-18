@@ -32,6 +32,7 @@ namespace PizzaStoreMVC.UI.Sync
             {
                 db.Mapper.Map(dbOrder);
             }
+            lib.Order.OrderHasBeenPlace = false;
         }
     }
 }
